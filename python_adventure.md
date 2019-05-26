@@ -10,8 +10,13 @@ Start Second planning session:  2019-05-25  22:16
 
 End Second planning session: 2019-05-25  23:21
 
-
 Total Planning Time:  2hrs 35mins
+
+Start language learning session:  2019-05-25  23:40
+
+End language learning session:  2019-05-26  00:05
+
+Time spent learning basic syntax, control structure, and function defining: 25mins
 
 ----
 
@@ -196,6 +201,7 @@ Tracking objects intelligently:
 - List: Object_ID (ID of each object is not really used in program, but is just the index of the object within this list.)
   - List: Object_Data (Ordered list of individual data items for each object.)
     - String: Object_Name
+    - List: Aliases (List of strings that are also acceptable names for this object.)
     - String: Description
     - Int: Current_Room_ID
     - Boolean: Usable?
