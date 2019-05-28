@@ -18,6 +18,26 @@ End language learning session:  2019-05-26  00:05
 
 Time spent learning basic syntax, control structure, and function defining: 25mins
 
+Begin Coding session 1:  2019-05-26  21:47
+
+End Coding session 1:  2019-05-26  23:58
+
+Session 1 productivity:  40%?
+
+Start Coding Session 2: 2019-05-27  22:05
+
+End Coding Session 2: 2019-05-28  01:20
+
+Session 2 productivity:  40%?
+
+Total coding time:  5hrs 25mins
+
+Total productive coding time:  2hrs 11mins
+
+Total time spent debugging: 2hrs 8mins
+
+Debugging time spent discovering that function default parameters don't behave as expected: 1hr 34mins
+
 ----
 
 ## Room and Action descriptions
@@ -36,7 +56,8 @@ You are in a small clearing at the bottom of a steep valley.  There appear to be
 
 
 #### Room 2:
-You are in what appears to have been a small herb garden.  Few plants are still growing, and much of the area has been overgrown with weeds.
+You are in what appears to have been a small herb garden in front of a crumbling structure.  A few plants are still growing, but much of the area has been overgrown with weeds.
+`<Garden object lives here.>`
 `<Onion object lives here.>`
 
 
@@ -85,10 +106,6 @@ RM0 -- RM1 -- RM4 -- RM5 [] END
 
 `Get_Room_Exits(int Room_ID)` -- Return ordered list of connected Room_ID: (North,East,South,West)
 
-`Parse_Command(string Command)` -- Extract first word as command, then call related function with remainder of string as parameter?
-  - --> Default:  "I don't understand that command."
-  - --! Remember to include a "Help" function to list permitted commands!
-
 `GetObjectID(string Name)` -- Int.  Find object which matches `Name` in the object list and return that object's ID.  Returns `-1` if not found.
 
 `IsUsable(int Object_ID)` -- Boolean.  Look up if the given object works with the `Use` command.
@@ -102,6 +119,10 @@ RM0 -- RM1 -- RM4 -- RM5 [] END
 `GetStatusMessage(int Object_ID)` -- String.  Returns the status string for the given object's current status.
 
 `GetObjectRoom(int Object_ID)` -- Int.  Returns the `Room_ID` where the object currently is.
+
+`Parse_Command(string Command)` -- Extract first word as command, then call related function with remainder of string as parameter?
+  - --> Default:  "I don't understand that command."
+  - --! Remember to include a "Help" function to list permitted commands!
 
 
 
@@ -143,7 +164,7 @@ Tracking objects intelligently:
    - Status:  ``
 1. Gate
    - Flags:
-     - Usable? **True**
+     - Usable? False
 	 - Takable?  False
    - Description: `The gate is formed of some gleaming metal and appears to be polished to a high luster.`
    - Status:
@@ -158,7 +179,7 @@ Tracking objects intelligently:
 1. Onion
    - Flags:
      - Usable? **True** (Only from inventory)
-       - Use_Message:  `You offer the onion to the creature, which accepts it with a broad smile.  The creature removes the shiny object hanging from its neck and hands it to you before wandering off to eat`
+       - Use_Message:  `You offer the onion to the creature, which accepts it with a broad smile.  The creature removes the shiny object hanging from its neck and hands it to you before wandering off to eat.`
 	 - Takable?  **True**
 	   - Take_Message:  `You dig up a fresh onion and take it with you.`
    - Description: ``
@@ -179,7 +200,8 @@ Tracking objects intelligently:
    - Status:  ``
 1. Key?
    - Flags:
-     - Usable? **True**
+     - Usable? **True** (Only from inventory)
+       - Use_Message:  `You unlock the gate with the key.`
 	 - Takable?  False
 	   - Take_Message:  `You have received a key.`
    - Description: `It looks like a gleaming brass key.`
