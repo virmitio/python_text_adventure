@@ -1,5 +1,10 @@
 # Example Python Adventure
 # Copyright Tim Rogers 2019
+#
+# License: CC-BY
+# Creative Commons Share-Alike
+# https://creativecommons.org/licenses/by/4.0/
+#
 
 # A Note:
 #       It turns out that Python performs function default parameter binding
@@ -10,12 +15,6 @@
 #       defaults removed from the function definitions to avoid issues from
 #       unrecognized language assumptions.
 
-#Initial declarations so the functions don't throw exceptions while being defined.
-playerRoom = 0
-playerInventory = []
-gameTurn = 0
-objectList = []
-roomList = []
 
 ##### Data lookup functions
 
@@ -32,7 +31,7 @@ def GetRoomExits( roomID, roomList ):
 
 def GetObjectID( objectName, objectList ):
     '''
-    This will try to find an object which has a Name or Alias matching the @objectName input.
+    This will try to find an object which has a Name or Alias matching the objectName input.
     If found, it will return the matching objectID.  Otherwise it will return -1.
     '''
     # We'll need to check each possible item in the object list...
@@ -142,6 +141,7 @@ Commands:
   E or East
   S or South
   W or West
+  Exit
 
 ''')
 
@@ -349,6 +349,8 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
     Attempts to parse the provided string for a valid command.
     If the command is recognized, this will further attempt to process the command.
     '''
+    # Set default return for a fresh look around.
+    newLook = False
     # Split the command string into "'command' 'object'" if a space is present.
     separator_index = -1
     for position in range(len(command)):
@@ -368,19 +370,20 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
     ### Command handling
 
     # Help
-    if (localCommand == "Help") | (localCommand == "HELP") | (localCommand == "help") |\
-       (localCommand == "H") | (localCommand == "h") | (localCommand == "?"):
+    if (localCommand == "Help") or (localCommand == "HELP") or (localCommand == "help") or \
+       (localCommand == "H") or (localCommand == "h") or (localCommand == "?"):
         CommandHelp()
         # Getting the list of commands does not advance game time.
     # Look
-    elif (localCommand == "Look") | (localCommand == "LOOK") | (localCommand == "look") |\
-         (localCommand == "L") | (localCommand == "l"):
-        CommandLook(roomID,roomList,objectList)
+    elif (localCommand == "Look") or (localCommand == "LOOK") or (localCommand == "look") or \
+         (localCommand == "L") or (localCommand == "l"):
+        # Request a look from the calling function to ensure proper timing.
+        newLook = True
         gameTurn +=1
     # Examine
-    elif (localCommand == "Examine") | (localCommand == "EXAMINE") | (localCommand == "examine") |\
-         (localCommand == "Ex") | (localCommand == "EX") | (localCommand == "ex") |\
-         (localCommand == "X") | (localCommand == "x"):
+    elif (localCommand == "Examine") or (localCommand == "EXAMINE") or (localCommand == "examine") or \
+         (localCommand == "Ex") or (localCommand == "EX") or (localCommand == "ex") or \
+         (localCommand == "X") or (localCommand == "x"):
         # This command only really works with a target.
         if localObject == None:
             print("You carefully examine nothing.  There was nothing worth noting.")
@@ -388,8 +391,8 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
             CommandExamine(localObject,roomID,roomList,objectList,playerInventory)
         gameTurn +=1
     # Take
-    elif (localCommand == "Take") | (localCommand == "TAKE") | (localCommand == "take") |\
-         (localCommand == "T") | (localCommand == "t"):
+    elif (localCommand == "Take") or (localCommand == "TAKE") or (localCommand == "take") or \
+         (localCommand == "T") or (localCommand == "t"):
         # This command also only works with a target.
         if localObject == None:
             print("You grasp at air, but fail to hold on to anything.")
@@ -397,8 +400,8 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
             CommandTake(localObject,roomID,roomList,objectList,playerInventory)
         gameTurn +=1
     # Use
-    elif (localCommand == "Use") | (localCommand == "USE") | (localCommand == "use") |\
-         (localCommand == "U") | (localCommand == "u"):
+    elif (localCommand == "Use") or (localCommand == "USE") or (localCommand == "use") or \
+         (localCommand == "U") or (localCommand == "u"):
         # Yet another command that only works with a target.
         if localObject == None:
             print("You succesfully use nothing.  There was no effect.")
@@ -406,9 +409,9 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
             CommandUse(localObject,roomID,roomList,objectList,playerInventory)
         gameTurn +=1
     # Inventory
-    elif (localCommand == "Inventory") | (localCommand == "INVENTORY") | (localCommand == "inventory") |\
-         (localCommand == "Inv") | (localCommand == "INV") | (localCommand == "inv") |\
-         (localCommand == "I") | (localCommand == "i"):
+    elif (localCommand == "Inventory") or (localCommand == "INVENTORY") or (localCommand == "inventory") or \
+         (localCommand == "Inv") or (localCommand == "INV") or (localCommand == "inv") or \
+         (localCommand == "I") or (localCommand == "i"):
         print("You are carrying: ")
         if len(playerInventory) > 0:
             for item in playerInventory:
@@ -418,53 +421,57 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
 
     ## Movement directions
     # North
-    elif (localCommand == "North") | (localCommand == "NORTH") | (localCommand == "north") |\
-         (localCommand == "N") | (localCommand == "n"):
+    elif (localCommand == "North") or (localCommand == "NORTH") or (localCommand == "north") or \
+         (localCommand == "N") or (localCommand == "n"):
         # Check for a path in this direction.
         localExits = GetRoomExits(roomID,roomList)
         if localExits[0] > -1:
-            # There's a path this way.  Move the player and give a free look around.
+            # There's a path this way.  Move the player.
             roomID = localExits[0]
-            CommandLook(roomID,roomList,objectList)
+            newLook = True
         else:
             print("You see no way to go that direction.")
         gameTurn +=1
     # East
-    elif (localCommand == "East") | (localCommand == "EAST") | (localCommand == "east") |\
-         (localCommand == "E") | (localCommand == "e"):
+    elif (localCommand == "East") or (localCommand == "EAST") or (localCommand == "east") or \
+         (localCommand == "E") or (localCommand == "e"):
         # Check for a path in this direction.
         localExits = GetRoomExits(roomID,roomList)
         if localExits[1] > -1:
-            # There's a path this way.  Move the player and give a free look around.
+            # There's a path this way.  Move the player.
             roomID = localExits[1]
-            CommandLook(roomID,roomList,objectList)
+            newLook = True
         else:
             print("You see no way to go that direction.")
         gameTurn +=1
     # South
-    elif (localCommand == "South") | (localCommand == "SOUTH") | (localCommand == "south") |\
-         (localCommand == "S") | (localCommand == "s"):
+    elif (localCommand == "South") or (localCommand == "SOUTH") or (localCommand == "south") or \
+         (localCommand == "S") or (localCommand == "s"):
         # Check for a path in this direction.
         localExits = GetRoomExits(roomID,roomList)
         if localExits[2] > -1:
-            # There's a path this way.  Move the player and give a free look around.
+            # There's a path this way.  Move the player.
             roomID = localExits[2]
-            CommandLook(roomID,roomList,objectList)
+            newLook = True
         else:
             print("You see no way to go that direction.")
         gameTurn +=1
     # West
-    elif (localCommand == "West") | (localCommand == "WEST") | (localCommand == "west") |\
-         (localCommand == "W") | (localCommand == "w"):
+    elif (localCommand == "West") or (localCommand == "WEST") or (localCommand == "west") or \
+         (localCommand == "W") or (localCommand == "w"):
         # Check for a path in this direction.
         localExits = GetRoomExits(roomID,roomList)
         if localExits[3] > -1:
-            # There's a path this way.  Move the player and give a free look around.
+            # There's a path this way.  Move the player.
             roomID = localExits[3]
-            CommandLook(roomID,roomList,objectList)
+            newLook = True
         else:
             print("You see no way to go that direction.")
         gameTurn +=1
+    #Exit
+    elif (localCommand == "Exit") or (localCommand == "EXIT") or (localCommand == "exit"):
+        # Implementing this as an arbitrary <0 check in the caller.
+        gameTurn = -5
 
     ### End handling of known commands
 
@@ -474,7 +481,7 @@ def ParseCommand( command, roomList, objectList, playerInventory, roomID, gameTu
     ### End command parsing and processing
 
     # Return the new roomID and gameTurn to the caller.
-    return (roomID, gameTurn)
+    return [roomID, gameTurn, newLook]
 
 
 ########
@@ -678,7 +685,7 @@ creatureID = GetObjectID("Creature",objectList)
 
 print("\n\n\n\n")
 print("You wake up on a dirt floor with no recolection of how you came to be here.")
-CommandLook(playerRoom,roomList,objectList)
+newLook = True
 
 # Main loop
 while True:
@@ -696,12 +703,22 @@ while True:
         print("\n\nThe creature attacked you in the throes of its hunger.  Defenseless, you stood no chance.  You have died and failed.\n")
         break
 
-
+    if newLook:
+        CommandLook(playerRoom,roomList,objectList)
 
     #Prompt for action    
     print("\n\n\n")
     action = input('["?" for Help]  Action>  ')
 
+    #When we call the command parsing function, it returns our new roomID and gameTurn.
+    commandReturn = ParseCommand(action, roomList, objectList, playerInventory, playerRoom, gameTurn)
+    playerRoom = commandReturn[0]
+    gameTurn = commandReturn[1]
+    newLook = commandReturn[2]
+    
+    if gameTurn < 0:
+        print("Exiting game...")
+        break
 
     # Creature begins moving around after 10 game turns.
     if gameTurn > 9:
@@ -725,8 +742,6 @@ while True:
                 # If the creature doesn't already have somewhere to go, select at random.
                 creatureMoveTo = random.choice(moveChoices)
             SetObjectLocation(creatureID,creatureMoveTo,objectList)
-
-    #When we call the command parsing function, it returns our new roomID and gameTurn.
-    playerRoom, gameTurn = ParseCommand(action, roomList, objectList, playerInventory, playerRoom, gameTurn)
+    # End creature movement segment
 
 
