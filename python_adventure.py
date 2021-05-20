@@ -1,9 +1,8 @@
 # Example Python Adventure
 # Copyright Tim Rogers 2019
 #
-# License: CC-BY
-# Creative Commons Share-Alike
-# https://creativecommons.org/licenses/by/4.0/
+# License: Apache-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 
 # A Note:
